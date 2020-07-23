@@ -50,3 +50,7 @@ The Save Manager is a powershell script that executes in the background and uses
   ## Installation
 
   Simply copy the scripts to any directory of your choosing anywhere on your system, and the backups will be placed in a "backups" subdirectory that will be created on the first runtime.
+
+  ## License
+
+  This Project is licensed under the MIT License - see [LICENSE](LICENSE)
