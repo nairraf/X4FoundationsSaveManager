@@ -1,9 +1,8 @@
-# things you should not mess with unless you know what you are doing follow
-$curFolder = (Get-Location).path
-$backupFolder = $curFolder + "\backups"
-$cacheFile = $backupFolder + "\.cache.json"
+# Author: Ian Farr (C) 2020
+# this file is licensed under the MIT license.
 
-#----
+##
+#### things you can mess with
 $prevDayBackupFiles = 4 # how many files to keep for the previous days per backup set?
                         # if 1, the most recent file for that day is kept
                         # if 2, then keep the most recent one, and the oldest one for that day
@@ -15,6 +14,11 @@ $deleteAutoSaves = $true    # which save types do we want to cleanup/delete when
 $deleteQuickSaves = $true
 $deleteNormalSaves = $false
 $maintenanceHours = 12   # an interval in hours; maintenance will be performed every N hours
+
+##
+#### things you should not mess with unless you know what you are doing follow
+$curFolder = (Get-Location).path
+$backupFolder = $curFolder + "\backups"
 $maintenanceFile = $backupFolder + "\.maintenance.json"
 
 if (-not (Test-Path -Path $maintenanceFile)) {

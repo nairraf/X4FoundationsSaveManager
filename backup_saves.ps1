@@ -1,8 +1,11 @@
+# Author: Ian Farr (C) 2020
+# this file is licensed under the MIT license.
+
 ##
 #### things you can mess with
 
 # the amount of time the script will "pause" before looking for new save's to backup. Default = 30 (seconds)
-$sleepSeconds = 30
+$sleepSeconds = 300
 
 # should we backup autosaves? default true
 $autoSaves = $true
@@ -12,6 +15,10 @@ $quickSaves = $true
 
 # should we backup normal saves? default true
 $normalSaves = $true
+
+# controls if the companion script (backup_mgmt.ps1) is called to check
+#   if there are any backup files that need to be aged out/cleaned up
+$ageOutBackups = $false
 
 ##
 #### things you shouldn't need to mess with
@@ -205,8 +212,10 @@ while ($outerloop) {
             $cache | ConvertTo-Json > $cacheFile
         }
 
-        Write-Host
-        & $curFolder\file_mgmt.ps1
+        if ($ageOutBackups) {
+            Write-Host
+            & $curFolder\backup_mgmt.ps1
+        }
 
         Write-Host
         Write-Host "Press F12 to switch to another backup set name"
