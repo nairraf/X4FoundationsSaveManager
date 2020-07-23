@@ -21,7 +21,7 @@ The Save Manager is a powershell script that executes in the background and uses
   * Backup Set Names are defined at runtime. The save manager will prompt you to enter one before it does anything
   * You can easily change the Backup Set Names without terminating and re-launching. Simply Press F12 while this script is sleeping and you can enter a new tag. This way should you want to switch to another playthrough, you can tag that playthrough differently to easily identify which backups are for which playthroughs. 
 * each backup has the following naming convention:
-  * <tag>-<savetype>_YYYY.MM.DD_HH.MM.SS.xml.gz
+  * `<tag>`-`<savetype>`_YYYY.MM.DD_HH.MM.SS.xml.gz
   * Example: FRFPlaythough-autosave_2020.07.14_22.37.56.xml.gz
     * 'FRFPlaythough' is a user defined tag specified at runtime. 
 * easy installation, just copy to any directory on your system, and as long as your save files are in the default location (My Documents\EgoSoft\X4\######\save), then the script should be able to auto-locate the save files, and auto-detect the current directory. Backups will be placed in a subfolder of whatever dierctory you placed the script in. It does not need to reside in the X4 "save" folder
