@@ -1,0 +1,3 @@
+backups/*.json
+backups/*.gz
+backups/data/*
