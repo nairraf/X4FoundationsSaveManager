@@ -116,7 +116,7 @@ while ($outerloop) {
                 }
                 
                 # file is not at the expected location
-                # see if we have simpy moved backup directories and update accordingly
+                # see if we have simply moved backup directories and update accordingly
                 if ( Test-Path -Path ($backupFolder + "\" + $backup.BackedUpFileName) ) {
                     $cacheContent[$i].BackedUpFileFullName = $backupFolder + "\" + $backup.BackedUpFileName
                     $detectChange = $true
@@ -190,8 +190,24 @@ while ($outerloop) {
             if ($file.Name.Contains("autosave")) {
                 $saveType = "autosave"
             }
+
+            # extract the current index details, and append it to saveType
+
+            # quickSave doesn't have an index - there is only one, so we just need to get the save/autosave index
+            # quickSave doesn't have an underscore in it's name, so we look for that, which means it's an autosave ot a save
+            if ($file.Name.Contains('_')) {
+                # $fileNameSplit[0] = autosave_##, save_###
+                $fileNameSplit = $file.Name.Split('.')
+                
+                # $fileNameIndexSplit[0] = autosave, save
+                # $fileNameIndexSplit[1] = ## (this is the index we are after)
+                $fileNameIndexSplit = $fileNameSplit.Split("_")
+
+                # append the index to saveType
+                $saveType += '_' + $fileNameIndexSplit[1]
+            }
             
-            $destinationName = "$($backupSetName)-" + $saveType + "_" + $file.LastWriteTimeUtc.Year + "." + $("{0:00}" -f ($file.LastWriteTimeUtc.Month)) + "." + $("{0:00}" -f ($file.LastWriteTimeUtc.Day)) + "_" + $("{0:00}" -f ($file.LastWriteTimeUtc.Hour)) + "." + $("{0:00}" -f ($file.LastWriteTimeUtc.Minute)) + "." + $("{0:00}" -f ($file.LastWriteTimeUtc.Second)) + ".xml.gz"
+            $destinationName = "$($backupSetName)-" + $saveType + "-" + $file.LastWriteTimeUtc.Year + "." + $("{0:00}" -f ($file.LastWriteTimeUtc.Month)) + "." + $("{0:00}" -f ($file.LastWriteTimeUtc.Day)) + "-" + $("{0:00}" -f ($file.LastWriteTimeUtc.Hour)) + "." + $("{0:00}" -f ($file.LastWriteTimeUtc.Minute)) + "." + $("{0:00}" -f ($file.LastWriteTimeUtc.Second)) + ".xml.gz"
             $destinationFullName = $backupFolder + "\" + $destinationName
             
             if (-not (Test-Path -Path $destinationName)) {

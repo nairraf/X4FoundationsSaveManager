@@ -22,7 +22,7 @@ $backupFolder = $curFolder + "\backups"
 $maintenanceFile = $backupFolder + "\.maintenance.json"
 
 if (-not (Test-Path -Path $maintenanceFile)) {
-    New-Item -Path $maintenanceFile -ItemType "file"
+    New-Item -Path $maintenanceFile -ItemType "file" | Out-Null
 }
 
 $maintenanceContent = Get-Content -Raw -Path $maintenanceFile | ConvertFrom-Json
@@ -63,15 +63,16 @@ if ($performMaintenance) {
         $curFileDetail.Name = $backup.Name
         $curFileDetail.FullName = $backup.FullName
 
-        # example file name: FRF-autosave_2020.07.22_23.56.55.xml.gz
+        # example file name: TST-autosave_01-2020.07.24-16.21.22.xml.gz
         #   setSplit[0] = FRF = user defined backup set name
-        #   setSplit[1] = autosave_2020.07.22_23.56.55.xml.gz
+        #   setSplit[1] = autosave_##
+        #   setSplit[2] = 2020.07.22
+        #   setSplit[3] = 23.56.55.xml.gz
         $setSplit = $backup.Name.Split("-")
         $curFileDetail.BackupSet = $setSplit[0]
 
         # saveTypeSplit[0] = autosave = Savetype
-        # saveTypeSplit[1] = 2020.07.22 = YYYY.MM.DD
-        # saveTypeSplit[2] = 23.56.55.xml.gz = HH.MM.SS.xml.gz
+        # saveTypeSplit[1] = save index
         $saveTypeSplit = $setSplit[1].Split("_")
         $curFileDetail.SaveType = $saveTypeSplit[0]
         
@@ -84,8 +85,8 @@ if ($performMaintenance) {
         # timeSplit[1] = 56 = MM
         # timeSplit[2] = 55 = SS
         # timeSplit[3] amd [4] we don't care about (xml, and gz respectively)
-        $dateSplit = $saveTypeSplit[1].Split(".")
-        $timeSplit = $saveTypeSplit[2].Split(".")
+        $dateSplit = $setSplit[2].Split(".")
+        $timeSplit = $setSplit[3].Split(".")
         
         # UniversalSortableDateTimePattern Format = 'YYYY-MM-DD HH:MM:SSZ'
         # Z = Zulu time (UTC)
@@ -93,13 +94,14 @@ if ($performMaintenance) {
         $dateString += $timeSplit[0] + ':' + $timeSplit[1] + ':' + $timeSplit[2] + 'Z'
         # build and assign our UTC date object representing the time the file was last updated/backed up
         $curFileDetail.DateTime = ([datetime](Get-Date -Format (Get-Culture).DateTimeFormat.UniversalSortableDateTimePattern -Date $dateString)).ToUniversalTime()
+        # we also add a string based date property to make our life easier later with Group-Object
         $curFileDetail.Date = $dateSplit[0] + '-' + $dateSplit[1] + '-' + $dateSplit[2]
 
-        # by default we do not delete
+        # by default we do not delete anything
         $curFileDetail.Delete = $false
 
         # is this file too old? if so mark it for deletion right away
-        if ($curFileDetail.Date -lt $curDateUTC - (New-TimeSpan -Days $oldDays) ) {
+        if ($curFileDetail.DateTime -lt $curDateUTC - (New-TimeSpan -Days $oldDays) ) {
             if ($curFileDetail.SaveType.ToLower() -eq 'autosave' -and $deleteAutoSaves -eq $true) {
                 $curFileDetail.Delete = $true
             }
