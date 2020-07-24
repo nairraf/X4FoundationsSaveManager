@@ -207,7 +207,7 @@ while ($outerloop) {
                 $saveType += '_' + $fileNameIndexSplit[1]
             }
             
-            $destinationName = "$($backupSetName)-" + $saveType + "-" + $file.LastWriteTimeUtc.Year + "." + $("{0:00}" -f ($file.LastWriteTimeUtc.Month)) + "." + $("{0:00}" -f ($file.LastWriteTimeUtc.Day)) + "-" + $("{0:00}" -f ($file.LastWriteTimeUtc.Hour)) + "." + $("{0:00}" -f ($file.LastWriteTimeUtc.Minute)) + "." + $("{0:00}" -f ($file.LastWriteTimeUtc.Second)) + ".xml.gz"
+            $destinationName = "$($backupSetName)-" + $file.LastWriteTimeUtc.Year + "." + $("{0:00}" -f ($file.LastWriteTimeUtc.Month)) + "." + $("{0:00}" -f ($file.LastWriteTimeUtc.Day)) + "-" + $("{0:00}" -f ($file.LastWriteTimeUtc.Hour)) + "." + $("{0:00}" -f ($file.LastWriteTimeUtc.Minute)) + "." + $("{0:00}" -f ($file.LastWriteTimeUtc.Second)) + '-' + $saveType + ".xml.gz"
             $destinationFullName = $backupFolder + "\" + $destinationName
             
             if (-not (Test-Path -Path $destinationName)) {
