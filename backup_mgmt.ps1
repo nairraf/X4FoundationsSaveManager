@@ -63,30 +63,35 @@ if ($performMaintenance) {
         $curFileDetail.Name = $backup.Name
         $curFileDetail.FullName = $backup.FullName
 
-        # example file name: TST-autosave_01-2020.07.24-16.21.22.xml.gz
-        #   setSplit[0] = FRF = user defined backup set name
-        #   setSplit[1] = autosave_##
-        #   setSplit[2] = 2020.07.22
-        #   setSplit[3] = 23.56.55.xml.gz
+        # example file name: TST-2020.07.24-20.23.37-autosave_01.xml.gz
+        #   setSplit[0] = TST = user defined backup set name
+        #   setSplit[1] = 2020.07.24 = YYYY.MM.DD
+        #   setSplit[2] = 20.23.37 = HH.MM.SS
+        #   setSplit[3] = autosave_01.xml.gz = savetype_index##.xml.gz
         $setSplit = $backup.Name.Split("-")
         $curFileDetail.BackupSet = $setSplit[0]
 
-        # saveTypeSplit[0] = autosave = Savetype
-        # saveTypeSplit[1] = save index
-        $saveTypeSplit = $setSplit[1].Split("_")
+        # saveTypeSplit[0] = autosave_##, save_###, quicksave
+        # saveTypeSplit[1] = xml
+        # saveTypeSplit[2] = gz
+        $saveTypeSplit = $setSplit[3].Split(".")
+        if ($saveTypeSplit[0].Contains('_')) {
+            # if we have an underscore, it means we have an index in the name
+            # ignore it, as we don't need it for this script's purposes
+            $saveTypeSplit[0] = ($saveTypeSplit[0].Split('_'))[0]
+        }
         $curFileDetail.SaveType = $saveTypeSplit[0]
         
         # to build a date object based on UTC, we first must extract the YYYY.MM.DD and HH.MM.SS portions 
         # from saveTypeSplit[1] and saveTypeSplit[2]
         # dateSplit[0] = 2020 = YYYY
         # dateSplit[1] = 07 = MM
-        # dateSplit[2] = 22 = DD
-        # timeSplit[0] = 23 = HH
-        # timeSplit[1] = 56 = MM
-        # timeSplit[2] = 55 = SS
-        # timeSplit[3] amd [4] we don't care about (xml, and gz respectively)
-        $dateSplit = $setSplit[2].Split(".")
-        $timeSplit = $setSplit[3].Split(".")
+        # dateSplit[2] = 24 = DD
+        # timeSplit[0] = 20 = HH
+        # timeSplit[1] = 23 = MM
+        # timeSplit[2] = 37 = SS
+        $dateSplit = $setSplit[1].Split(".")
+        $timeSplit = $setSplit[2].Split(".")
         
         # UniversalSortableDateTimePattern Format = 'YYYY-MM-DD HH:MM:SSZ'
         # Z = Zulu time (UTC)
@@ -227,6 +232,7 @@ if ($performMaintenance) {
                             #$daySorted[$i].Delete = $true
                         }
                     }
+                    Write-Host
                 }
             }
         }
