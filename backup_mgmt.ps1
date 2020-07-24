@@ -3,11 +3,11 @@
 
 ##
 #### things you can mess with
-$prevDayBackupFiles = 4 # how many files to keep for the previous days per backup set?
+$prevDayBackupFiles = 3 # how many files to keep for the previous days per backup set?
                         # if 1, the most recent file for that day is kept
                         # if 2, then keep the most recent one, and the oldest one for that day
                         # if 3, then keep the most recent one, the oldest one, and one in the middle for that day
-                        # if 3+, keep newest, oldest, and more in the middle for that day
+                        # if 4+, keep newest, oldest, and backups evenly distributed for that day
 
 $oldDays = 30           # how many previous days to keep for all backup sets?
 $deleteAutoSaves = $true    # which save types do we want to cleanup/delete when they age out?
@@ -152,7 +152,7 @@ if ($performMaintenance) {
                 #   1   - keep the most recent one
                 #   2   - keep the oldest and the most recent one
                 #   3   - Keep the oldest and the most recent one, and another in the middle
-                #   4+  - Same as 3, just keeping more in the middle
+                #   4+  - Keep the oldest, newest, and others evenly distributed throughout that day
                 $daySorted = $day.Group | Sort-Object -Property DateTime
                 
                 # days = 1
@@ -179,8 +179,9 @@ if ($performMaintenance) {
                 }
 
                 # days = 3 or more
-                # we keep the most recent save, and oldest save, some in the middle, and mark the rest for deletion
-                if ($prevDayBackupFiles -gt 2 -and $daySorted.Length -gt $prevDayBackupFiles) {
+                # if days = 3 then we keep the most recent save, and oldest save, and the middle one
+                # if days = 4+, then we keep the most recent, oldest, and others evenly distributed throughout the array/day
+                if ($prevDayBackupFiles -ge 3 -and $daySorted.Length -gt $prevDayBackupFiles) {
                     $max = $daySorted.Length
                     # figure out the middle
                     if ($max % 2 -eq 0) {
@@ -190,33 +191,38 @@ if ($performMaintenance) {
                     }
                     
                     # build our center indexes we will keep
-                    $centers = @()
-                    $centerMath = 1
-                    $centerModMath = 1
-                    for ($i = 0; $i -lt $prevDayBackupFiles - 2; $i++) {
-                        if ($i -eq 0) {
-                            $centers += $middle
-                            continue
-                        } 
-                        if ($i % 2 -eq 0) {
-                            if ($middle + $centerMath -le $max) {
-                                $centers += $middle + $centerMath
-                                $centermath += 1
+                    $indexesToKeep = @()
+                    # we always keep the first element (oldest) and the last element (newest)
+                    $indexesToKeep += 0
+                    $indexesToKeep += $max - 1
+                    if ( $prevDayBackupFiles -eq 3 ) {
+                        # 3 backups per day were specified, so we just take the middle one
+                        $indexesToKeep += $middle
+                    } else {
+                        # we have more than 3 backups per day to save
+                        # we take the size of the array - 2 (because we always take the first and last)
+                        # we then divide that by prevDayBackupFiles -2 (because we always take the first and last)
+                        # that becomes our base index which we keep (rounded to nearest int). 
+                        # we also use the base to increment our index value which let's us skip through the array
+                        # taking evenly distributed indexes which are rounded - and we add to the $indexesToKeep array
+                        # we delete all other indexes
+                        $baseIndex = ( ($max - 2) / ($prevDayBackupFiles - 2))
+                        # minus one off the base Index because array indexes are 0 based
+                        $base = $baseIndex - 1
+                        while ($base -lt ($max-1) -and $indexesToKeep.Length -le $prevDayBackupFiles) {
+                            $candidateIndex = [int]([math]::round($base))
+                            if (-not $indexesToKeep.Contains($candidateIndex)) {
+                                $indexesToKeep += $candidateIndex
                             }
-                        } else {
-                            if ($middle - $centerModMath -ge 0) {
-                                $centers += $middle - $centerModMath
-                                $centerModMath += 1
-                            }
+                            $base += $baseIndex
                         }
                     }
 
-                    # mark all our entries for deletion except for oldest, center's and newest
+                    # mark all our entries for deletion except for oldest, newest, and our indexesToKeep
                     for ($i=0; $i -lt $max; $i++) {
-                        if ($i -gt 0 -and $i -lt $max - 1) {
-                            if (-not $centers.Contains($i)) {
-                                $backupFilesDetails[$($daySorted[$i].Name)].Delete = $true
-                            }
+                        if (-not $indexesToKeep.Contains($i)) {
+                            $backupFilesDetails[$($daySorted[$i].Name)].Delete = $true
+                            #$daySorted[$i].Delete = $true
                         }
                     }
                 }
