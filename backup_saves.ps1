@@ -79,7 +79,7 @@ while ($outerloop) {
             $exit = $true
             continue
         }
-        if ($backupSetName -match '[^a-zA-Z0-9]') {
+        if ($backupSetName -match '[^a-zA-Z0-9 ]') {
             $inputLoopError = $true
             continue
         }
