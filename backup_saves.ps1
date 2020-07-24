@@ -135,15 +135,15 @@ while ($outerloop) {
         $saves = @()
 
         if ($autoSaves) {
-            $saves += Get-ChildItem -Path $x4SaveLocation -Filter "autosave*.xml.gz"
+            $saves += Get-ChildItem -Path $x4SaveLocation -Filter "autosave*"
         }
         
         if ($quickSaves) {
-            $saves += Get-ChildItem -Path $x4SaveLocation -Filter "quicksave*.xml.gz"
+            $saves += Get-ChildItem -Path $x4SaveLocation -Filter "quicksave*"
         }
 
         if ($normalSaves) {
-            $saves += Get-ChildItem -Path $x4SaveLocation -Filter "save*.xml.gz"
+            $saves += Get-ChildItem -Path $x4SaveLocation -Filter "save*"
         }
         
         # regenerate the cache file
@@ -164,7 +164,7 @@ while ($outerloop) {
                 $backupName = ""
                 $backupFullName = ""
                 foreach ( $backup in $cacheContent) {
-                    if ($backup.Name -eq $file.Name -and $backup.LastWriteTimeUtc.ToString() -eq $file.LastWriteTimeUtc.ToString()) {
+                    if ($backup.Name -eq $file.Name -and $backup.LastWriteTimeUtc.ToString() -eq $file.LastWriteTimeUtc.ToString() -and $backup.Length -eq $file.Length) {
                         $match = $true
                         $backupName = $backup.BackedUpFileName
                         $backupFullName = $backup.BackedUpFileFullName
