@@ -56,6 +56,13 @@ The Save Manager is a powershell script that executes in the background and uses
           * the algorithm will then devide the remaining backups (21) by the amount of backups desired to keep (5-2 (because we already kept the oldest and newest) = 3 in this case) and then skips through the backups in chronological order selecting the appropriate indexes (21/3 (rounded to the closes integer if needed) = 7), so backups at indexes 6, 13, 20 will also be kept (index 6 is the 7'th save for that day). While the algorithm does a few extra things to try and make sure it can accomodate multiple scenarios (not all division is clean, like it is in this example), that's the general idea of what it does and how it selects backups to keep. The idea is to get samples of your backups throughout the day and a sort-of even way. In this case you end up having two saves close together at the end of the day (20 and 22), but depending on the amount of saves available, and the desired number of backups to keep, things will change.
   * All files per configured savetype will age out according to the global setting.
 
+## Use Cases
+
+The following are a few example use cases for this script:
+
+* Leaving the game running overnight with this script running will backup all the autosaves which allow you to go back to certain points should you need to
+* Instead of going through the menu's to create a normal save, just hit F5 and quicksave all the time knowing that this script will backup any new quicksaves it finds. This way you will have multiple quicksave backups to jump back to, all tagged with whatever backup set name you chose along with date and timestamps.
+
 ## Download and Installation
 
 Download the latest release [here](https://github.com/nairraf/X4FoundationsSaveManager/releases)
