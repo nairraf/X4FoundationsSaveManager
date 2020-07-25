@@ -113,7 +113,16 @@ You can execute the `backup_save.ps1` through powershell, or you can just click 
 
 Please checkout the [screenshots](screenshots) for a step-by-step walk through of how the scripts work.
 
-[screenshots/01-Welcome-BackupSetName.png](Initial Welcome Screen)
+1. [Initial welcome screen](screenshots/01-Welcome-BackupSetName.png)
+1. [Enter Backup Set name](screenshots/02-EnterBackupSetName.png)
+1. [First run](screenshots/03-FirstRun.png)
+1. [Second run - nothing new to backup](screenshots/04-NothingNew.png)
+1. [Something new found to backup](screenshots/05-SomethingNew.png)
+1. [Quickly changing Backup Set names](screenshots/06-F12.png)
+1. [Entering the new Backup Set name](screenshots/07-NewBackupSetName.png)
+1. [New saves using the new Backup Set name](screenshots/08-NewBackupSetName-NewSaves.png)
+1. [File System view of the backups made](screenshots/09-FileSystemView.png)
+1. [Backup File Aging](screenshots/10-BackupFileAging.png)
 
 ## License
 
