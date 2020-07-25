@@ -113,7 +113,7 @@ You can execute the `backup_save.ps1` through powershell, or you can just click 
 
 Please checkout the [screenshots](screenshots) for a step-by-step walk through of how the scripts work.
 
-* [screenshots/01-Welcome-BackupSetName.png](Initial Welcome Screen)
+[screenshots/01-Welcome-BackupSetName.png](Initial Welcome Screen)
 
 ## License
 
