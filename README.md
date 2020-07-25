@@ -56,9 +56,11 @@ The Save Manager is a powershell script that executes in the background and uses
           * the algorithm will then devide the remaining backups (21) by the amount of backups desired to keep (5-2 (because we already kept the oldest and newest) = 3 in this case) and then skips through the backups in chronological order selecting the appropriate indexes (21/3 (rounded to the closes integer if needed) = 7), so backups at indexes 6, 13, 20 will also be kept (index 6 is the 7'th save for that day). While the algorithm does a few extra things to try and make sure it can accomodate multiple scenarios (not all division is clean, like it is in this example), that's the general idea of what it does and how it selects backups to keep. The idea is to get samples of your backups throughout the day and a sort-of even way. In this case you end up having two saves close together at the end of the day (20 and 22), but depending on the amount of saves available, and the desired number of backups to keep, things will change.
   * All files per configured savetype will age out according to the global setting.
 
-## Installation
+## Download and Installation
 
-Simply copy the scripts to any directory of your choosing anywhere on your system, and the backups will be placed in a "backups" subdirectory that will be created on the first runtime.
+Download the latest release [here](releases)
+
+Once you have downloaded the latest release, simply extract the zip file into a directory of your choosing. This can be anywhere on your system. The backups taken will be placed in a subdirectory called `backups` which will get created the very first time the program is run.
 
 ## Configuration
 
