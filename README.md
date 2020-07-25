@@ -62,6 +62,8 @@ Download the latest release [here](https://github.com/nairraf/X4FoundationsSaveM
 
 Once you have downloaded the latest release, simply extract the zip file into a directory of your choosing. This can be anywhere on your system. The backups taken will be placed in a subdirectory called `backups` which will get created the very first time the program is run.
 
+As stated above, as long as the X4 save files are in their default location `(My Documents\EgoSoft\X4\######\save)`, then the script should auto detect the saves, it's current location, and just start backing things up. If at a later point in time you want to move the directory to another drive/location. Just cut/paste as you normally would, and the script will detect the new location and update all the paths accordingly and continue to back things up normally. As long as the `backups\.cache.json` file stays intact, it will remember the backups taken and where it left off. 
+
 ## Configuration
 
 ### backup_saves.ps1
