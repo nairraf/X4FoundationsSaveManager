@@ -141,9 +141,9 @@ This Project is licensed under the MIT License - see [LICENSE](LICENSE)
 
 ## Privacy
 
-This script does not collect any personal information, only information regarding the save files themselves such as file name, size, and date information. None of this information collected is sent to any external sources. All information it gathers is kept locally on your computer in two files in the backup folder that is created on the first run. There are two files which you can examine to see what kind of information is collected:
+This script does not collect any personal information, only information regarding the save files themselves such as file name, size, and date information. None of this information collected is sent to any external sources. All information it gathers is kept locally on your computer in two files in the backup folder that is created on the first run. Thse files can be examined to see what kind of information is collected and can be opened with any text editor, such as notepad:
 
-* backups\.cache.json
-* backups\.maintenance.json
+* `backups\.cache.json`
+* `backups\.maintenance.json`
 
 The `.maintenance.json` file is only created if the maintenance (`$ageOutBackups`) is enabled. If these files are deleted, they will be re-created whenever you run the program. Please note that if the `.cache.json` file is deleted, then all the saves will be re-backed up, as the script will think this is the first time it has run. 
