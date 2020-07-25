@@ -58,7 +58,7 @@ The Save Manager is a powershell script that executes in the background and uses
 
 ## Download and Installation
 
-Download the latest release [here](releases)
+Download the latest release [here](https://github.com/nairraf/X4FoundationsSaveManager/releases)
 
 Once you have downloaded the latest release, simply extract the zip file into a directory of your choosing. This can be anywhere on your system. The backups taken will be placed in a subdirectory called `backups` which will get created the very first time the program is run.
 
