@@ -134,7 +134,7 @@ This Project is licensed under the MIT License - see [LICENSE](LICENSE)
 
 ## Privacy
 
-This script does not collect any personal information, only information regarding the save files themselves such as file name, size, and date information. None of this information collected or sent to any external sources. All information it gathers is kept locally on your computer in two files in the backup folder that is created on the first run. There are two files which you can examine to see what kind of information is collected:
+This script does not collect any personal information, only information regarding the save files themselves such as file name, size, and date information. None of this information collected is sent to any external sources. All information it gathers is kept locally on your computer in two files in the backup folder that is created on the first run. There are two files which you can examine to see what kind of information is collected:
 
 * backups\.cache.json
 * backups\.maintenance.json
