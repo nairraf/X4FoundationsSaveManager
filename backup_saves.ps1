@@ -20,6 +20,9 @@ $normalSaves = $true
 #   if there are any backup files that need to be aged out/cleaned up
 $ageOutBackups = $false
 
+# controls how many old backup set names we keep
+$backupSetNameHistory = 10
+
 ##
 #### things you shouldn't need to mess with
 $x4MyDocRoot = ([Environment]::GetFolderPath('MyDocuments')) + "\Egosoft\X4"
@@ -43,6 +46,30 @@ foreach ($folder in $x4MyDocRootFolders) {
 
 ##
 #### things you should not mess with unless you know what you are doing follow
+
+#####  Functions
+<#
+.SYNOPSIS
+Writes the Backup Set Name cache to disk
+
+.DESCRIPTION
+Writes the Backup Set Name cache to disk
+
+.PARAMETER backupSetNames
+Parameter a string array containing a list or previous backup set names
+#>
+function Write-JsonCache {
+    Param (
+        [Parameter(Mandatory=$true, Position=0)]
+        [string[]] $BackupSetNames,
+        [Parameter(Mandatory=$true, Position=1)]
+        [string] $CacheFileFullPath
+    )
+    ConvertTo-Json  $BackupSetNames > $CacheFileFullPath
+}
+
+##### End Functions
+
 if ($null -eq $x4SaveLocation) {
     Write-Host "Error finding X4 Save folder, you might have to set the '`$x4SaveLocation' variable manually"
     Exit 1
@@ -51,6 +78,7 @@ if ($null -eq $x4SaveLocation) {
 $curFolder = (Get-Location).path
 $backupFolder = $curFolder + "\backups"
 $cacheFile = $backupFolder + "\.cache.json"
+$bsnCacheFile = $backupFolder + "\.bsncache.json"
 
 # Make sure that our backup folder exists
 if ( -not (Test-Path -Path $backupFolder) ) {
@@ -69,11 +97,39 @@ while ($outerloop) {
         Write-Host "------------------------------------------------"
         Write-Host "Type 'exit' without the quotes to exit"
         Write-Host
+        
+        # Get Previous Backup Set Name Cache
+        # since this only happens on program start on when choosing a new backup set name, we just read it from disk every time we get here
+        # this shouldn't cause any IO issues, as it's a manual selection process anyways
+        # this way we are sure we have the latest BSN cache as well
+        $bsnCacheContent = $null
+        if (Test-Path -Path $bsnCacheFile) {
+            $bsnCacheContent = Get-Content -Raw -Path $bsnCacheFile | ConvertFrom-Json
+        }
+
+        # if there are no Backup Set Name Cache's initialize a new blank array
+        if ($null -eq $bsnCacheContent) {
+            $bsnCacheContent = @()
+        }
+
+        # see if we should display the error text
         if ($inputLoopError) {
-            Write-Host -ForegroundColor Yellow "Note: Backup Set names can only contain alpha numeric text"
+            Write-Host -ForegroundColor Red "Note: Backup Set names can only contain alpha numeric text"
             $inputLoopError = $false
         }
-        $backupSetName = Read-Host -Prompt 'Enter a Backup Set Name'
+
+        # if we have previous Backup Set Names, display them now
+        if ($bsnCacheContent.Length -gt 0) {
+            Write-Host
+            Write-Host "Backup Set Name History:"
+            for ($i=0; $i -lt $bsnCacheContent.Length; $i++) {
+                Write-Host -NoNewline -ForegroundColor Green "  $($i+1)  "
+                Write-Host -ForegroundColor White "$($bsnCacheContent[$i])"
+            }
+            Write-Host
+        }
+
+        $backupSetName = Read-Host -Prompt 'Enter a new Backup Set Name or numeric Index'
         if ($backupSetName.ToLower() -eq 'exit') {
             $inputloop = $false
             $exit = $true
@@ -85,6 +141,30 @@ while ($outerloop) {
         }
         if ($null -ne $backupSetName -and $backupSetName.Length -gt 0) {
             $inputloop = $false
+            
+            # if we just have a numeric index, get the corresponding BSN
+            if ($backupSetName -match '[0-9]+$') {
+                $selectedIndex = [int]$backupSetName - 1
+                if ($selectedIndex -lt $bsnCacheContent.Length -and $selectedIndex -ge 0) {
+                    $backupSetName = $bsnCacheContent[$selectedIndex]
+                }
+            }
+
+            # if the new backup set name isn't in the cache, add it and persist the file
+            # this is a case insensitive match operation, but will keep the initial case that was entered
+            # we prepend the names on the list
+            if (-not ($bsnCacheContent -contains $backupSetName) ) {
+                $bsnCacheContent = ,$backupSetName + $bsnCacheContent
+                if ($bsnCacheContent.Length -gt $backupSetNameHistory) {
+                    $tempArr = @()
+                    for ($i=0; $i -lt $backupSetNameHistory; $i++) {
+                        $tempArr += $bsnCacheContent[$i]
+                    }
+                    $bsnCacheContent = $tempArr
+                }
+                Write-JsonCache -BackupSetNames $bsnCacheContent -CacheFileFullPath $bsnCacheFile
+            }
+
             continue
         }
     }

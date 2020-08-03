@@ -26,7 +26,9 @@ The Save Manager is a powershell script that executes in the background and uses
 * each backup has the following naming convention:
   * `<tag>`-YYYY.MM.DD-HH.MM.SS-`<savetype>_<Index##>`.xml.gz
   * Example: FRF Payback-2020.05.05-03.45.30-save_001.xml.gz
-    * 'FRF Payback' is a user defined tag specified at runtime. 
+    * 'FRF Payback' is a user defined tag specified at runtime.
+* Remembers the last 10 Backup Set Names, so choosing repeating backup set names can be as simple as entering the corresponding number when prompted
+  * more or less Backup Set Names can be remember by adjusting the `$backupSetNameHistory` variable.
 * easy installation, just copy to any directory on your system, and as long as your save files are in the default location (My Documents\EgoSoft\X4\######\save), then the script should be able to auto-locate the save files, and auto-detect the current directory. Backups will be placed in a subfolder of whatever dierctory you placed the script in. It does not need to reside in the X4 "save" folder, in fact it is recommended that you don't do this, but you can if you want.
 * All times are tracked in UTC, and nothing should be locale dependant, so should work on any windows 10 installation
   * Locals Tested so far:
@@ -93,6 +95,10 @@ $normalSaves = $true
 # controls if the companion script (backup_mgmt.ps1) is called to check
 #   if there are any backup files that need to be aged out/cleaned up
 $ageOutBackups = $false
+
+# controls how many old backup set names we keep
+$backupSetNameHistory = 10
+
 ```
 
 ### backup_mgmt.ps1
@@ -127,6 +133,7 @@ Please checkout the [screenshots](screenshots) for a step-by-step walk through o
 1. [Initial welcome screen](screenshots/01-Welcome-BackupSetName.png)
 1. [Enter Backup Set name](screenshots/02-EnterBackupSetName.png)
 1. [First run](screenshots/03-FirstRun.png)
+1. [Choosing existing backup set names after first run](screenshots/02a-EnterBackupSetName.png)
 1. [Second run - nothing new to backup](screenshots/04-NothingNew.png)
 1. [Something new found to backup](screenshots/05-SomethingNew.png)
 1. [Quickly changing Backup Set names](screenshots/06-F12.png)
@@ -144,6 +151,7 @@ This Project is licensed under the MIT License - see [LICENSE](LICENSE)
 This script does not collect any personal information, only information regarding the save files themselves such as file name, size, and date information. None of this information collected is sent to any external sources. All information it gathers is kept locally on your computer in two files in the backup folder that is created on the first run. Thse files can be examined to see what kind of information is collected and can be opened with any text editor, such as notepad:
 
 * `backups\.cache.json`
+* `backups\.bsncache.json`
 * `backups\.maintenance.json`
 
-The `.maintenance.json` file is only created if the maintenance (`$ageOutBackups`) is enabled. If these files are deleted, they will be re-created whenever you run the program. Please note that if the `.cache.json` file is deleted, then all the saves will be re-backed up, as the script will think this is the first time it has run. 
+The `.maintenance.json` file is only created if the maintenance (`$ageOutBackups`) is enabled. If these files are deleted, they will be re-created whenever you run the program. Please note that if the `.cache.json` file is deleted, then all the saves will be re-backed up, as the script will think this is the first time it has run. `.bsncache.json` is the current cache of existing backup set names that have been entered. Only the last 10 are kept by default (the `$backupSetNameHistory` variable controls the amount of cached Backup Set Names).
